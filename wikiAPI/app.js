@@ -68,20 +68,24 @@ app.get("/search/:topic", (req, res) => {
           if (err) throw err;
             console.log("1 record inserted");
           });
+
+          //Uso de redis para guardar 
+
+          var client = redis.createClient();
+          client.on('connect', function (){
+            console.log('Redis connect');
+          });
+          client.on('error',function(error){
+            console.log('error' + error);
+          });
+          client.set(myTopic,cleanArticles2,redis.print);
+          client.get(myTopic,function(error,result){
+          if(error){
+            console.log(error);
+            throw error;
+          }
         });
-	var client = redis.createClient();
-	client.on('connect', function (){
-		console.log('Redis connect');
-	});
-	client.on('error',function(error){
-		console.log('error' + error);
-	});
-	client.set(myTopic,cleanArticles2,redis.print);
-	client.get(myTopic,function(error,result){
-	if(error){
-		console.log(error);
-		throw error;
-	}
+
 	console.log('El resultado '+result);
 	});
     }
