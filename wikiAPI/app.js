@@ -7,7 +7,7 @@ const morgan = require('morgan')
 const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
-
+var redis = require('redis');
 //Define conexion a db
 const connection = mysql.createConnection({
   host: 'mysql-datos-2.cyufope5fgiy.us-east-1.rds.amazonaws.com',
@@ -69,7 +69,23 @@ app.get("/search/:topic", (req, res) => {
             console.log("1 record inserted");
           });
         });
-    }else{
+	var client = redis.createClient();
+	client.on('connect', function (){
+		console.log('Redis connect');
+	});
+	client.on('error',function(error){
+		console.log('error' + error);
+	});
+	client.set(myTopic,cleanArticles2,redis.print);
+	client.get(myTopic,function(error,result){
+	if(error){
+		console.log(error);
+		throw error;
+	}
+	console.log('El resultado '+result);
+	});
+    }
+else{
     res.json(topArticles);
     }
   })
