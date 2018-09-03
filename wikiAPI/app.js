@@ -67,9 +67,8 @@ app.get("/search/:topic", (req, res) => {
           connection.query(sql, function (err, result) {
           if (err) throw err;
             console.log("1 record inserted");
-          });
 
-          //Uso de redis para guardar 
+            //Uso de redis para guardar 
           
          var redis = require('redis');
          var client = redis.createClient();
@@ -90,6 +89,9 @@ app.get("/search/:topic", (req, res) => {
              }
              console.log('GET result ->' + result);
          });
+          });
+
+          
 
 	console.log('El resultado '+result);
 	});
