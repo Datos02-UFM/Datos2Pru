@@ -70,21 +70,26 @@ app.get("/search/:topic", (req, res) => {
           });
 
           //Uso de redis para guardar 
-
-          var client = redis.createClient();
-          client.on('connect', function (){
-            console.log('Redis connect');
-          });
-          client.on('error',function(error){
-            console.log('error' + error);
-          });
-          client.set(myTopic,cleanArticles2,redis.print);
-          client.get(myTopic,function(error,result){
-          if(error){
-            console.log(error);
-            throw error;
-          }
-        });
+          
+         var redis = require('redis');
+         var client = redis.createClient();
+         
+         client.on('connect', function() {
+             console.log('Redis client connected');
+         });
+         
+         client.on('error', function (err) {
+             console.log('Something went wrong ' + err);
+         });
+         
+         client.set(myTopic, cleanArticles2, redis.print);
+         client.get(myTopic, function (error, result) {
+             if (error) {
+                 console.log(error);
+                 throw error;
+             }
+             console.log('GET result ->' + result);
+         });
 
 	console.log('El resultado '+result);
 	});
