@@ -144,26 +144,22 @@ app.get('/search/:topic', (req, res) => {
 
 //obtener historial por usuario
 app.get('/history/:userId', (req, res) => {
-    console.log("Fetching history by userId")
-  
-    const queryString = "SELECT fecha, topic FROM user_logs where usuario = ? "
-    connection.query(queryString, [req.params.userId], (err, rows, fields) => {
-      if (err) {
-        console.log("Failed to query for users: " + err)
-        res.sendStatus(500)
-        return
-        // throw err
-      }
-  
-      const users = rows.map((row) => {
-        return {"Trending topics": row.topic}
-      })
-      
-      res.json(rows)
+  console.log("Fetching history by userId")
+
+  const queryString = "SELECT fecha, topic FROM user_logs where usuario = ? "
+  connection.query(queryString, [req.params.userId], (err, rows, fields) => {
+    if (err) {
+      console.log("Failed to query for users: " + err)
+      res.sendStatus(500)
+      return
+      // throw err
+    }
+    var historyUser = rows.map((row) => {
+      return {"Date": row.fecha, "url": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
     })
-  
-    // res.end()
+    res.json(historyUser)
   })
+})
   
 
 app.listen(3003, () => {
