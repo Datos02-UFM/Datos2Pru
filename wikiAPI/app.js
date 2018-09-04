@@ -173,7 +173,7 @@ if (err) throw err;
 console.log("1 log inserted");
 });
 });
-}
+});
 
 //elimina
 app.get("/", (req, res) => {
