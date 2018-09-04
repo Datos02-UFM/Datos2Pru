@@ -27,7 +27,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-
+//consulta sin userid
 app.get("/search/:topic", (req, res) => {
   console.log("Fetching articles of topic: " + req.params.topic)
   var reqId = httpContext.get('reqId');
@@ -109,80 +109,73 @@ else{
 
 })
 
-
+//consulta con userid
 app.get('/search/:topic/:userId', (req, res) => {
-  console.log("Fetching articles of topic: " + req.params.topic)
-  const myTopic = req.params.topic
-  
-  const queryString = "SELECT topic, info_array FROM articulos WHERE topic = ?"
-  connection.query(queryString, [myTopic], (err, rows, fields) => {
-    if (err) {
-      //go fetch from wikipedia
-      console.log("Unable to retrieve from database: " + err)
-      res.sendStatus(500)
-      
+  //jala los parametros
+console.log("Fetching articles of topic: " + req.params.topic)
+const myTopic = req.params.topic
+var cleanArticles = topArticles.toString().replace(/\'/,"-");
+var cleanArticles2 = cleanArticles.toString().replace(/\'[a-zA-Z]/,"-");
+var redis = require('redis');
+var client = redis.createClient();
+//revisa en redis
+client.on('connect', function() {
+    console.log('Redis client connected');
+});
+client.on('error', function (err) {
+    console.log('Something went wrong ' + err);
+});
+client.get(myTopic, function (error, result) {
+    if (error) {
+        console.log(error);
+        throw error;
     }
+    console.log('GET result ->' + result);
 
-    //return info from db
-    var topArticles = rows.map((row) => {
-      return {"Topic": row.topic, "Top articles": row.info_array, "UserId": req.params.userId};
-    })
+    //si el result esta vacio va a wikipedia y lo guarda
 
-    if (rows == 0) {
-      console.log("Not found locally; fetching from wikipedia");
-      var options={
-        methode: 'GET',
-        uri:'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + myTopic + '&limit=25&namespace=0&format=json',
-        json:true
-      };
-    
-      rp(options)
-        .then(function(parseBody){
-          topArticles = parseBody[1];
-          res.json("[{\"Topic\" : " + myTopic + ", \"Top articles\": " + topArticles + ", \"UserId\" : " + req.params.userId + "}]");
-        })
-        .catch(function (err){
-        }).finally(function(){
-          var cleanArticles = topArticles.toString().replace(/\'/,"-");
-          var cleanArticles2 = cleanArticles.toString().replace(/\'[a-zA-Z]/,"-");
-          var sql = "INSERT INTO articulos (topic, info_array) VALUES ('" + myTopic + "', '" + cleanArticles2 + "')";
-          connection.query(sql, function (err, result) {
-          if (err) throw err;
-            console.log("1 record inserted");
-           
-          });
+    if (result=null){
+        console.log("Not found locally; fetching from wikipedia");
+    var options={
+      methode: 'GET',
+      uri:'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + myTopic + '&limit=25&namespace=0&format=json',
+      json:true
+    };
+        rp(options)
+      .then(function(parseBody){
+        topArticles = parseBody[1];
+        res.json("[{\"Topic\" : " + myTopic + ", \"Top articles\": " + topArticles + ", \"UserId\" : " + req.params.userId + "}]");
+      })
+      .catch(function (err){
+      }).finally(function(){
+        var cleanArticles = topArticles.toString().replace(/\'/,"-");
+        var cleanArticles2 = cleanArticles.toString().replace(/\'[a-zA-Z]/,"-");
+      //Uso de redis para guardar   
+       var redis = require('redis');
+       var client = redis.createClient();
+       client.on('connect', function() {
+           console.log('Redis client connected');
+       });
+       client.on('error', function (err) {
+           console.log('Something went wrong ' + err);
+       });
+       client.set(myTopic, cleanArticles2, redis.print);
 
-        //Uso de redis para guardar   
-         var redis = require('redis');
-         var client = redis.createClient();
-         client.on('connect', function() {
-             console.log('Redis client connected');
-         });
-         client.on('error', function (err) {
-             console.log('Something went wrong ' + err);
-         });
-         client.set(myTopic, cleanArticles2, redis.print);
-         client.get(myTopic, function (error, result) {
-             if (error) {
-                 console.log(error);
-                 throw error;
-             }
-             console.log('GET result ->' + result);
-         });
+      });
 
-        });
     }else{
-    res.json(topArticles);
-    }
-  })
+  res.json(topArticles);
+  }
   //Inserta log del request
-  var sql = "INSERT INTO user_logs (topic, usuario) VALUES ('" + myTopic + "', '" + req.params.userId + "')";
-  connection.query(sql, function (err, result) {
-  if (err) throw err;
-  console.log("1 log inserted");
-  });
-})
+var sql = "INSERT INTO user_logs (topic, usuario) VALUES ('" + myTopic + "', '" + req.params.userId + "')";
+connection.query(sql, function (err, result) {
+if (err) throw err;
+console.log("1 log inserted");
+});
+});
+}
 
+//elimina
 app.get("/", (req, res) => {
   console.log("Responding to root route")
   //res.send("Root")
