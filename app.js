@@ -150,7 +150,10 @@ app.get('/search/:topic', (req, res) => {
     //log
     
     const logger = myLoggers.getLogger("default");
+    logger.warn('Cheese is quite smelly.');
     logger.info('Cheese is Gouda.');
+    logger.debug('Cheese is not a food.');
+
 })
 
 //obtener historial por usuario
