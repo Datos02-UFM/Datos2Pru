@@ -6,11 +6,7 @@ const morgan = require('morgan')
 const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
-var log4js = require('log4js');
-log4js.configure({
-  appenders: { cheese: { type: 'file', filename: '/tmp/logstash.txt' } },
-  categories: { default: { appenders: ['cheese'], level: 'error' } }
-});
+
 
 
 
