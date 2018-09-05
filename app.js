@@ -8,7 +8,7 @@ var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
 var elasticsearch = require('elasticsearch');
 var client = new elasticsearch.Client({
-   hosts: [ 'localhost:5601']
+   hosts: [ 'localhost:9200']
 });
 
 //Define conexion a db
