@@ -11,7 +11,7 @@ log4js.configure({
   appenders: { cheese: { type: 'file', filename: 'cheese.log' } },
   categories: { default: { appenders: ['cheese'], level: 'error' } }
 });
-var logger = log4js.getLogger('cheese'); 
+
 
 
 //Define conexion a db
@@ -151,6 +151,7 @@ app.get('/search/:topic', (req, res) => {
     });
     
     //logea
+    var logger = log4js.getLogger('cheese'); 
     logger.info('Cheese is Gouda.');
 })
 
