@@ -6,6 +6,7 @@ const morgan = require('morgan')
 const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
+var fs = require('fs');
 
 //Define conexion a db
 const connection = mysql.createConnection({
@@ -81,6 +82,13 @@ app.get('/search/:topic/:userId', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
+    //guarda un log en un archivo
+    fs.writeFile("/tmp/logstash.txt", myTopic, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log("The file was saved!");
+    }); 
 })
 
 //search sin userid
@@ -140,6 +148,13 @@ app.get('/search/:topic', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
+    //guarda un log en un archivo
+    fs.writeFile("/tmp/logstash.txt", myTopic, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log("The file was saved!");
+    }); 
 })
 
 //obtener historial por usuario
