@@ -87,6 +87,10 @@ app.get('/search/:topic/:userId', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
+     //log
+    const logger = myLoggers.getLogger("default");
+    logger.info(myTopic);
+
 })
 
 //search sin userid
@@ -148,7 +152,6 @@ app.get('/search/:topic', (req, res) => {
     });
     
     //log
-    
     const logger = myLoggers.getLogger("default");
     logger.info(myTopic);
   
