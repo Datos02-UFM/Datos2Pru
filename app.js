@@ -7,9 +7,6 @@ const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
 
-
-
-
 //Define conexion a db
 const connection = mysql.createConnection({
     host: 'mysql-datos-2.cyufope5fgiy.us-east-1.rds.amazonaws.com',
@@ -84,8 +81,6 @@ app.get('/search/:topic/:userId', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
-    
-    
 })
 
 //search sin userid
@@ -145,29 +140,26 @@ app.get('/search/:topic', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
-    
-    //logea
-    
 })
 
 //obtener historial por usuario
 app.get('/history/:userId', (req, res) => {
-  console.log("Fetching history by userId")
-
-  const queryString = "SELECT fecha, topic FROM user_logs where usuario = ? "
-  connection.query(queryString, [req.params.userId], (err, rows, fields) => {
-    if (err) {
-      console.log("Failed to query for users: " + err)
-      res.sendStatus(500)
-      return
-      // throw err
-    }
-    var historyUser = rows.map((row) => {
-      return {"Date": row.fecha, "url": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
+    console.log("Fetching history by userId")
+  
+    const queryString = "SELECT fecha, topic FROM user_logs where usuario = ? "
+    connection.query(queryString, [req.params.userId], (err, rows, fields) => {
+      if (err) {
+        console.log("Failed to query for users: " + err)
+        res.sendStatus(500)
+        return
+        // throw err
+      }
+      var historyUser = rows.map((row) => {
+        return {"Date": row.fecha, "url": "http://localhost:3003/search/" + row.topic + "/" + req.params.userId};
+      })
+      res.json(historyUser)
     })
-    res.json(historyUser)
   })
-})
   
 
 app.listen(3003, () => {
