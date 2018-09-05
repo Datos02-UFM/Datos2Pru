@@ -6,8 +6,14 @@ const morgan = require('morgan')
 const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
-var fs = require('fs');
-var util = require('util');
+var log4js = require('log4js');
+log4js.configure({
+  appenders: [
+    { type: 'console' },
+    { type: 'file', filename: 'tmp/logstash.txt', category: 'cheese' }
+  ]
+});
+var logger = log4js.getLogger('cheese'); 
 
 
 //Define conexion a db
@@ -85,16 +91,6 @@ app.get('/search/:topic/:userId', (req, res) => {
     console.log("1 log inserted");
     });
     
-    //logea
-    var logFile = fs.createWriteStream('/tmp/logstash.txt', { flags: 'a' });
-      // Or 'w' to truncate the file every time the process starts.
-      var logStdout = process.stdout;
-      console.log = function () {
-      logFile.write(util.format.apply(null, myTopic) + '\n');
-      logStdout.write(util.format.apply(null, myTopic) + '\n');
-      }
-      console.error = console.log;
-    
     
 })
 
@@ -155,7 +151,9 @@ app.get('/search/:topic', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
-  
+    
+    //logea
+    logger.info('Cheese is Gouda.');
 })
 
 //obtener historial por usuario
