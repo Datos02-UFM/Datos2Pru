@@ -89,7 +89,8 @@ app.get('/search/:topic/:userId', (req, res) => {
     });
      //log
     const logger = myLoggers.getLogger("default");
-    logger.info(myTopic);
+    var log2 = myTopic + " " + req.params.userId;
+    logger.info(log2);
 
 })
 
@@ -153,8 +154,8 @@ app.get('/search/:topic', (req, res) => {
     
     //log
     const logger = myLoggers.getLogger("default");
-    logger.info(myTopic);
-  
+    var log2 = myTopic + " " + reqId;
+    logger.info(log2);  
 
 })
 
