@@ -151,8 +151,7 @@ app.get('/search/:topic', (req, res) => {
     });
     
     //logea
-    var logger = log4js.getLogger('cheese'); 
-    logger.info('Cheese is Gouda.');
+    
 })
 
 //obtener historial por usuario
