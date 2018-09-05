@@ -7,12 +7,7 @@ const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
 var log4js = require('log4js');
-log4js.configure({
-  appenders: [
-    { type: 'console' },
-    { type: 'file', filename: 'tmp/logstash.txt', category: 'cheese' }
-  ]
-});
+log4js.configure({ appenders: [{ type: 'console' },{ type: 'file', filename: 'tmp/logstash.txt', category: 'cheese' }]});
 var logger = log4js.getLogger('cheese'); 
 
 
