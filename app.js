@@ -6,6 +6,12 @@ const morgan = require('morgan')
 const mysql = require('mysql')
 var uuid = require('node-uuid');
 var httpContext = require('express-http-context');
+const myLoggers = require('log4js');
+myLoggers.configure({
+    appenders: { mylogger: { type:"file", filename: "/tmp/logstash.txt" } },
+    categories: { default: { appenders:["mylogger"], level:"ALL" } }
+});
+
 
 //Define conexion a db
 const connection = mysql.createConnection({
@@ -140,6 +146,11 @@ app.get('/search/:topic', (req, res) => {
     if (err) throw err;
     console.log("1 log inserted");
     });
+    
+    //log
+    
+    const logger = myLoggers.getLogger("default");
+    logger.info('Cheese is Gouda.');
 })
 
 //obtener historial por usuario
