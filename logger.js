@@ -2,11 +2,14 @@ var request = require('request')
 const express = require('express')
 const app = express()
 var fs = require('fs');
-app.get('/log/:topic/:userId', (req, res) => {
+app.get('/log/:topic/:userId/:requestTimestamp', (req, res) => {
     const topic = req.params.topic
     const userId = req.params.userId
-    fs.appendFile('D:\\Sexto Semestre\\Datos 2\\node logger\\log.txt', userId+", "+topic+"\r\n", function(err){
-        if(err){console.log(err);}
+    const requestTimestamp = req.param.requestTimestamp
+    fs.appendFile('~/tmp/logstash.txt', userId+", "+topic + ", " + requestTimestamp +"\r\n", function(err){
+        if(err){
+            console.log(err);
+        }
     });
 });
 
